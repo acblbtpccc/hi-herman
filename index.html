@@ -169,6 +169,7 @@
       max-width: 100vw;
       padding: 14px;
       gap: 12px;
+      overflow-x: hidden;
     }
 
     /* Topbar: wrap + simplify */
@@ -187,6 +188,8 @@
       grid-template-columns: 1fr;
       gap: 12px;
       min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     /* Telemetry panels: compact stat-card grids */
@@ -224,8 +227,8 @@
     .side .v.ok { color: var(--fg); }
 
     /* Hero: stack Hi, / herman vertically to fit narrow screens */
-    .hero { padding: 6px 4px; min-width: 0; max-width: 100%; }
-    .hero > div { min-width: 0; }
+    .hero { padding: 6px 4px; min-width: 0; max-width: 100%; width: 100%; overflow: hidden; }
+    .hero > div { min-width: 0; width: 100%; }
     .pre {
       font-size: 9px;
       letter-spacing: 0.22em;
@@ -235,9 +238,12 @@
     .pre .bar { width: 20px; }
     .hi, .name {
       display: block;
-      font-size: clamp(48px, 15vw, 88px);
+      width: 100%;
+      text-align: center;
+      font-size: clamp(44px, 14vw, 80px);
       letter-spacing: -0.045em;
       max-width: 100%;
+      overflow: hidden;
     }
     .hi { line-height: 0.95; }
     .name { margin-left: 0; line-height: 0.92; }
@@ -251,6 +257,7 @@
       justify-content: center;
       line-height: 1.6;
       max-width: 100%;
+      overflow: hidden;
     }
 
     /* Bottombar: ticker scrolls, clock wraps */
@@ -285,7 +292,7 @@
     .side .row { padding: 7px 8px; }
     .side .k { font-size: 7px; }
     .side .v { font-size: 10px; }
-    .hi, .name { font-size: clamp(44px, 15vw, 72px); }
+    .hi, .name { font-size: clamp(40px, 14vw, 64px); }
     .pre { font-size: 8.5px; letter-spacing: 0.18em; margin-bottom: 12px; }
     .subline { font-size: 8.5px; gap: 6px; }
     .topbar { font-size: 8.5px; }
