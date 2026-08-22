@@ -124,6 +124,12 @@
   }
   .subline .arrow { color: var(--fg-muted); }
   .subline .acc { color: var(--fg); }
+  .hero-live { display: none; }
+  .blink { animation: blink-colon 1.05s steps(2) infinite; }
+  @keyframes blink-colon {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0.15; }
+  }
   .hero::before, .hero::after {
     content: ""; position: absolute;
     width: 18px; height: 18px;
@@ -140,12 +146,14 @@
   .ticker .tk b { color: var(--fg); font-weight: 500; }
   .clock { color: var(--fg); font-variant-numeric: tabular-nums; }
   .scan {
-    position: fixed; left: 0; right: 0; height: 120px; top: -120px;
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.04), transparent);
+    position: fixed; left: 0; right: 0; height: 160px; top: -160px;
+    background:
+      linear-gradient(180deg, transparent, rgba(255,255,255,0.07), transparent),
+      linear-gradient(180deg, transparent 49.6%, rgba(255,255,255,0.22) 50%, transparent 50.4%);
     z-index: 3; pointer-events: none;
-    animation: sweep 8s linear infinite;
+    animation: sweep 7s linear infinite;
   }
-  @keyframes sweep { 0% { top: -120px; } 100% { top: 100vh; } }
+  @keyframes sweep { 0% { top: -160px; } 100% { top: 100vh; } }
   .hero, .side, .topbar, .bottombar {
     opacity: 0; animation: fadein 0.9s ease-out forwards;
   }
@@ -277,11 +285,11 @@
       overflow: hidden;
     }
 
-    /* Bottombar: ticker scrolls, clock wraps */
+    /* Bottombar: ticker only on mobile (clock moved into hero) */
     .bottombar {
       flex-wrap: wrap;
       gap: 8px;
-      font-size: 8.5px;
+      font-size: 9px;
       max-width: 100%;
       overflow: hidden;
     }
@@ -290,22 +298,51 @@
       flex: 1 1 100%;
       min-width: 0;
       width: 100%;
-      gap: 18px;
+      gap: 22px;
       overflow-x: auto;
       scrollbar-width: none;
       mask-image: none;
+      padding: 6px 0;
+      border-top: 1px solid var(--line);
     }
     .ticker::-webkit-scrollbar { display: none; }
-    .ticker .tk { font-size: 8.5px; flex-shrink: 0; }
-    .clock { font-size: 9.5px; order: 1; }
+    .ticker .tk { font-size: 9px; flex-shrink: 0; color: var(--fg); letter-spacing: 0.06em; }
+    .ticker .tk b { color: var(--fg); font-weight: 700; }
+    .bottombar .clock { display: none; }
+
+    /* Hero live readout (clock + uptime) under Hi, herman */
+    .hero-live {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      max-width: 100%;
+    }
+    .hl-time {
+      font-size: 15px;
+      letter-spacing: 0.14em;
+      color: var(--fg);
+      font-variant-numeric: tabular-nums;
+    }
+    .hl-up {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--fg-muted);
+      text-transform: uppercase;
+      font-variant-numeric: tabular-nums;
+    }
+    .hl-up .hl-k { color: var(--fg-muted); }
+    .hl-up span:last-child { color: var(--fg-dim); }
 
     /* Hero corner brackets smaller */
     .hero::before, .hero::after { width: 14px; height: 14px; }
     .hero::before { top: -6px; left: -6px; }
     .hero::after  { bottom: -6px; right: -6px; }
 
-    /* Scan sweep slower on mobile to save battery */
-    .scan { animation-duration: 11s; }
+    /* Scan sweep: keep visible and reasonably paced on mobile */
+    .scan { animation-duration: 6s; }
   }
 
   @media (max-width: 380px) {
@@ -317,6 +354,8 @@
     .pre { font-size: 8.5px; letter-spacing: 0.18em; margin-bottom: 12px; }
     .subline { font-size: 8.5px; gap: 6px; }
     .topbar { font-size: 8.5px; }
+    .hl-time { font-size: 13px; letter-spacing: 0.12em; }
+    .hl-up { font-size: 8px; }
   }
 </style>
 </head>
@@ -365,6 +404,10 @@
           <span class="arrow">→</span>
           <span>ready for input</span>
         </div>
+        <div class="hero-live" aria-hidden="true">
+          <div class="hl-time"><span id="hcH">--</span><span class="blink">:</span><span id="hcM">--</span><span class="blink">:</span><span id="hcS">--</span></div>
+          <div class="hl-up"><span class="hl-k">UPTIME</span> <span id="heroUptime">00:00:00</span></div>
+        </div>
       </section>
 
       <aside class="side right">
@@ -392,19 +435,29 @@
   </div>
 <script>
   const clock = document.getElementById('clock');
+  const hcH = document.getElementById('hcH');
+  const hcM = document.getElementById('hcM');
+  const hcS = document.getElementById('hcS');
   function tick() {
     const d = new Date();
     const pad = n => String(n).padStart(2, '0');
-    clock.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const t = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    if (clock) clock.textContent = t;
+    if (hcH) hcH.textContent = pad(d.getHours());
+    if (hcM) hcM.textContent = pad(d.getMinutes());
+    if (hcS) hcS.textContent = pad(d.getSeconds());
   }
   tick(); setInterval(tick, 1000);
 
   const uptimeEl = document.getElementById('uptime');
+  const heroUptimeEl = document.getElementById('heroUptime');
   const start = Date.now();
   function uptime() {
     const s = Math.floor((Date.now() - start) / 1000);
     const pad = n => String(n).padStart(2, '0');
-    uptimeEl.textContent = `${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`;
+    const t = `${pad(Math.floor(s/3600))}:${pad(Math.floor((s%3600)/60))}:${pad(s%60)}`;
+    if (uptimeEl) uptimeEl.textContent = t;
+    if (heroUptimeEl) heroUptimeEl.textContent = t;
   }
   uptime(); setInterval(uptime, 1000);
 
