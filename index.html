@@ -195,11 +195,12 @@
     /* Telemetry panels: compact stat-card grids */
     .side {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       border: 1px solid var(--line);
       border-radius: 2px;
       text-align: left;
       overflow: hidden;
+      max-width: 100%;
     }
     .side.left  { border-right: 1px solid var(--line); padding-right: 0; }
     .side.right { border-left: 1px solid var(--line); padding-left: 0; }
@@ -209,6 +210,8 @@
       align-items: flex-start;
       gap: 3px;
       padding: 9px 10px;
+      min-width: 0;
+      overflow: hidden;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
     }
@@ -222,8 +225,8 @@
       justify-content: space-between;
       align-items: baseline;
     }
-    .side .k { font-size: 7.5px; color: var(--fg-muted); letter-spacing: 0.1em; }
-    .side .v { font-size: 11px; color: var(--fg); font-weight: 500; }
+    .side .k { font-size: 7.5px; color: var(--fg-muted); letter-spacing: 0.1em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .side .v { font-size: 11px; color: var(--fg); font-weight: 500; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .side .v.ok { color: var(--fg); }
 
     /* Hero: stack Hi, / herman vertically to fit narrow screens */
@@ -265,10 +268,14 @@
       flex-wrap: wrap;
       gap: 8px;
       font-size: 8.5px;
+      max-width: 100%;
+      overflow: hidden;
     }
     .ticker {
       order: 2;
       flex: 1 1 100%;
+      min-width: 0;
+      width: 100%;
       gap: 18px;
       overflow-x: auto;
       scrollbar-width: none;
