@@ -185,7 +185,7 @@
 
     /* Main: single column stack, prevent grid blowout */
     main {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       min-width: 0;
       max-width: 100%;
@@ -230,8 +230,24 @@
     .side .v.ok { color: var(--fg); }
 
     /* Hero: stack Hi, / herman vertically to fit narrow screens */
-    .hero { padding: 6px 4px; min-width: 0; max-width: 100%; width: 100%; overflow: hidden; }
-    .hero > div { min-width: 0; width: 100%; }
+    .hero {
+      padding: 6px 4px;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero > div {
+      min-width: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
     .pre {
       font-size: 9px;
       letter-spacing: 0.22em;
@@ -241,12 +257,10 @@
     .pre .bar { width: 20px; }
     .hi, .name {
       display: block;
-      width: 100%;
       text-align: center;
       font-size: clamp(44px, 14vw, 80px);
       letter-spacing: -0.045em;
       max-width: 100%;
-      overflow: hidden;
     }
     .hi { line-height: 0.95; }
     .name { margin-left: 0; line-height: 0.92; }
