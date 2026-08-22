@@ -159,12 +159,14 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   @media (max-width: 720px) {
-    html, body { overflow-y: auto; height: auto; }
-    body { min-height: 100vh; min-height: 100dvh; }
+    html, body { overflow-y: auto; overflow-x: hidden; height: auto; }
+    body { min-height: 100vh; min-height: 100dvh; width: 100%; }
 
     .frame {
       height: auto;
       min-height: 100dvh;
+      width: 100%;
+      max-width: 100vw;
       padding: 14px;
       gap: 12px;
     }
@@ -180,22 +182,21 @@
     .topbar .left .hide-sm, .topbar .right .hide-sm { display: none; }
     .badge { padding: 3px 6px; font-size: 8.5px; }
 
-    /* Main: single column stack */
+    /* Main: single column stack, prevent grid blowout */
     main {
       grid-template-columns: 1fr;
       gap: 12px;
+      min-width: 0;
     }
 
     /* Telemetry panels: compact stat-card grids */
     .side {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      padding: 0;
       border: 1px solid var(--line);
       border-radius: 2px;
-      background: var(--line);
       text-align: left;
+      overflow: hidden;
     }
     .side.left  { border-right: 1px solid var(--line); padding-right: 0; }
     .side.right { border-left: 1px solid var(--line); padding-left: 0; }
@@ -205,15 +206,26 @@
       align-items: flex-start;
       gap: 3px;
       padding: 9px 10px;
-      background: var(--bg);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
     }
     .side.right .row { flex-direction: column; align-items: flex-start; }
+    .side .row:nth-child(3n) { border-right: none; }
+    .side .row:last-child {
+      grid-column: 1 / -1;
+      border-right: none;
+      border-bottom: none;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: baseline;
+    }
     .side .k { font-size: 7.5px; color: var(--fg-muted); letter-spacing: 0.1em; }
     .side .v { font-size: 11px; color: var(--fg); font-weight: 500; }
     .side .v.ok { color: var(--fg); }
 
     /* Hero: stack Hi, / herman vertically to fit narrow screens */
-    .hero { padding: 6px 4px; }
+    .hero { padding: 6px 4px; min-width: 0; max-width: 100%; }
+    .hero > div { min-width: 0; }
     .pre {
       font-size: 9px;
       letter-spacing: 0.22em;
@@ -223,8 +235,9 @@
     .pre .bar { width: 20px; }
     .hi, .name {
       display: block;
-      font-size: clamp(52px, 16vw, 96px);
+      font-size: clamp(48px, 15vw, 88px);
       letter-spacing: -0.045em;
+      max-width: 100%;
     }
     .hi { line-height: 0.95; }
     .name { margin-left: 0; line-height: 0.92; }
@@ -235,7 +248,9 @@
       letter-spacing: 0.08em;
       gap: 7px;
       flex-wrap: wrap;
+      justify-content: center;
       line-height: 1.6;
+      max-width: 100%;
     }
 
     /* Bottombar: ticker scrolls, clock wraps */
